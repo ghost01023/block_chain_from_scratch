@@ -11,6 +11,7 @@ REM Run the build command
 cmake --build . 
 IF %ERRORLEVEL% NEQ 0 (
     echo Build failed!
+    cd ..
     exit /b 1
 )
 
@@ -18,6 +19,7 @@ REM Run the executable
 send_blob.exe
 IF %ERRORLEVEL% NEQ 0 (
     echo Execution failed!
+    cd ..
     exit /b 1
 )
 

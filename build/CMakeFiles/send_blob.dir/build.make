@@ -72,15 +72,15 @@ CMakeFiles/send_blob.dir/send_blob.c.obj: CMakeFiles/send_blob.dir/flags.make
 CMakeFiles/send_blob.dir/send_blob.c.obj: C:/Users/Rosja\ Dostoyevsjky/Desktop/crypto/block_chain_from_scratch/send_blob.c
 CMakeFiles/send_blob.dir/send_blob.c.obj: CMakeFiles/send_blob.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir="C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\build\CMakeFiles" --progress-num=$(CMAKE_PROGRESS_1) "Building C object CMakeFiles/send_blob.dir/send_blob.c.obj"
-	C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/send_blob.dir/send_blob.c.obj -MF CMakeFiles\send_blob.dir\send_blob.c.obj.d -o CMakeFiles\send_blob.dir\send_blob.c.obj -c "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c"
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/send_blob.dir/send_blob.c.obj -MF CMakeFiles\send_blob.dir\send_blob.c.obj.d -o CMakeFiles\send_blob.dir\send_blob.c.obj -c "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c"
 
 CMakeFiles/send_blob.dir/send_blob.c.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing C source to CMakeFiles/send_blob.dir/send_blob.c.i"
-	C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c" > CMakeFiles\send_blob.dir\send_blob.c.i
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c" > CMakeFiles\send_blob.dir\send_blob.c.i
 
 CMakeFiles/send_blob.dir/send_blob.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling C source to assembly CMakeFiles/send_blob.dir/send_blob.c.s"
-	C:\msys64\mingw64\bin\cc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c" -o CMakeFiles\send_blob.dir\send_blob.c.s
+	C:\msys64\mingw64\bin\gcc.exe $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S "C:\Users\Rosja Dostoyevsjky\Desktop\crypto\block_chain_from_scratch\send_blob.c" -o CMakeFiles\send_blob.dir\send_blob.c.s
 
 # Object files for target send_blob
 send_blob_OBJECTS = \

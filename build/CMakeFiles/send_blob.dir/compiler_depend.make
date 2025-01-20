@@ -286,8 +286,7 @@ CMakeFiles/send_blob.dir/send_blob.c.obj: C:/Users/Rosja\ Dostoyevsjky/Desktop/c
   C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xsaveintrin.h \
   C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xsaveoptintrin.h \
   C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xsavesintrin.h \
-  C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xtestintrin.h \
-  C:/Users/Rosja\ Dostoyevsjky/Desktop/crypto/send_blob.c
+  C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xtestintrin.h
 
 
 C:/msys64/mingw64/include/mmsyscom.h:
@@ -861,5 +860,3 @@ C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xsaveintrin.h:
 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xsavesintrin.h:
 
 C:/msys64/mingw64/lib/gcc/x86_64-w64-mingw32/14.2.0/include/xtestintrin.h:
-
-C:/Users/Rosja\ Dostoyevsjky/Desktop/crypto/send_blob.c:

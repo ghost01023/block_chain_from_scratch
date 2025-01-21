@@ -301,7 +301,7 @@ int main()
     char *packet = create_packet(0x01, data); // SPECIFY THAT THIS IS A BLOCK
     pthread_t thread_send_packet, thread_receive_packet, thread_mine_block;
     printf("\nStarting thread to send packet...\n");
-    PacketConfig packet_config = {"192.168.1.5", 3009, packet, strlen(packet)};
+    PacketConfig packet_config = {"192.168.1.14", 3009, packet, strlen(packet)};
     pthread_create(&thread_send_packet, NULL, send_packet, &packet_config);
     printf("\nStarting thread to receive packet...\n");
     EmptyStruct empty = {1};

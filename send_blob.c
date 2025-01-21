@@ -214,6 +214,7 @@ char *create_packet(uint8_t nature_of_data, void *data)
     - MAJOR VERSION
     - MINOR VERSION
     - NATURE OF DATA (block [1], transaction [2], mined_block [3], request[4])
+    request in turn has data of 3 types: it's requesting block || transaction || wants to send mined block
     - SIZE OF DATA (in bytes)
     - DATA
     - FLAG END

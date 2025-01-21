@@ -16,7 +16,7 @@ IF %ERRORLEVEL% NEQ 0 (
 )
 
 REM Run the executable
-send_blob.exe
+latest_build.exe
 IF %ERRORLEVEL% NEQ 0 (
     echo Execution failed!
     cd ..

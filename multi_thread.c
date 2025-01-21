@@ -13,9 +13,10 @@ void *addition(void *arg)
 {
     Data *data = (Data *)arg;
     // printf("%s", sec_arg);
-    int sum = data->a + data->b;
-    printf("Addition: %d + %d = %d\n", data->a, data->b, sum);
-    return NULL;
+    int *sum = malloc(sizeof(int));
+    *sum = data->a + data->b;
+    printf("Addition: %d + %d = %d\n", data->a, data->b, *sum);
+    return sum;
 }
 
 // Function for the subtraction thread

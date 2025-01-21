@@ -4,6 +4,7 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <stdint.h>
+#include <pthread.h>
 
 #pragma comment(lib, "ws2_32.lib") // THE WINSOCK LIBARARY
 
@@ -21,6 +22,19 @@
 //
 // DATA (4mb MAX)
 // END FLAG 00000001
+
+typedef struct
+{
+    const char *ip;
+    const int port;
+    void *blob;
+    const size_t blob_size;
+} PacketConfig;
+
+typedef struct
+{
+    const int empty;
+} EmptyStruct;
 
 // INITIATE SOCKET FOR DATA TRANSFER
 void init_winsock()
@@ -46,15 +60,17 @@ void print_bits(char c)
 }
 
 // Function to receive a blob
-int receive_packet()
+void *receive_packet(void *void_empty)
 {
     // Create socket
+    int *exit_status = malloc(sizeof(int));
     SOCKET serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (serverSocket == INVALID_SOCKET)
     {
         printf("Socket creation failed: %d\n", WSAGetLastError());
         WSACleanup();
-        return 1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Bind the socket to a specific port (3309)
@@ -68,7 +84,8 @@ int receive_packet()
         printf("Bind failed: %d\n", WSAGetLastError());
         closesocket(serverSocket);
         WSACleanup();
-        return 1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Listen for incoming connections
@@ -77,7 +94,8 @@ int receive_packet()
         printf("Listen failed: %d\n", WSAGetLastError());
         closesocket(serverSocket);
         WSACleanup();
-        return 1;
+        *exit_status = 1;
+        return exit_status;
     }
     printf("Listening on port %d...\n", 3009);
 
@@ -88,7 +106,8 @@ int receive_packet()
         printf("Accept failed: %d\n", WSAGetLastError());
         closesocket(serverSocket);
         WSACleanup();
-        return 1;
+        *exit_status = 1;
+        return exit_status;
     }
     printf("Client connected\n");
 
@@ -123,12 +142,22 @@ int receive_packet()
     closesocket(clientSocket);
     closesocket(serverSocket);
     WSACleanup();
-    return 0;
+    *exit_status = 0;
+    return exit_status;
 }
 
 // Function to send a blob to a target device
-int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
+void *send_packet(void *void_packet)
 {
+    printf("\nAttempting to send packet...\n");
+    int *exit_status = malloc(sizeof(int));
+    PacketConfig *packet = void_packet;
+    // DESTRUCTURE PacketConfig STRUCT
+    const char *ip = packet->ip;
+    const int port = packet->port;
+    const void *blob = packet->blob;
+    const size_t blob_size = packet->blob_size;
+
     WSADATA wsaData;
     SOCKET sock = INVALID_SOCKET;
     struct sockaddr_in server_addr;
@@ -139,7 +168,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
     if (result != 0)
     {
         fprintf(stderr, "WSAStartup failed: %d\n", result);
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Validate blob size
@@ -147,7 +177,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
     {
         fprintf(stderr, "Error: Blob size exceeds maximum of %d bytes.\n", MAX_BLOB_SIZE);
         WSACleanup();
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Create socket
@@ -156,7 +187,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
     {
         fprintf(stderr, "Socket creation failed: %d\n", WSAGetLastError());
         WSACleanup();
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Configure server address
@@ -167,7 +199,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
         fprintf(stderr, "Invalid IP address.\n");
         closesocket(sock);
         WSACleanup();
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // Connect to the server
@@ -176,7 +209,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
         fprintf(stderr, "Connection to %s:%d failed: %d\n", ip, port, WSAGetLastError());
         closesocket(sock);
         WSACleanup();
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     // // Send blob size
@@ -194,7 +228,8 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
         fprintf(stderr, "Failed to send blob data: %d\n", WSAGetLastError());
         closesocket(sock);
         WSACleanup();
-        return -1;
+        *exit_status = 1;
+        return exit_status;
     }
 
     printf("Blob successfully sent to %s:%d\n", ip, port);
@@ -202,11 +237,12 @@ int send_packet(const char *ip, int port, const void *blob, size_t blob_size)
     // Cleanup
     closesocket(sock);
     WSACleanup();
-    return 0;
+    *exit_status = 0;
+    return exit_status;
 }
 
 // Function to create packet for transmission via the A2A protocol
-char *create_packet(uint8_t nature_of_data, void *data)
+void *create_packet(uint8_t nature_of_data, void *data)
 {
     /*
     STRUCTURE OF A PACKET
@@ -262,11 +298,17 @@ int main()
 {
     init_winsock();
     char *data = "\\BLOCK_HEIGHT=00001232;\\SEQUENCE_POSITION=28478274;";
-    printf("\n%llu\n", strlen(data));
-    const char *packet = create_packet(0x01, data);
-    receive_packet();
-    printf("\nAttempting to send...\n");
-    printf("%llu", strlen(packet));
+    char *packet = create_packet(0x01, data); // SPECIFY THAT THIS IS A BLOCK
+    pthread_t thread_send_packet, thread_receive_packet, thread_mine_block;
+    printf("\nStarting thread to send packet...\n");
+    PacketConfig packet_config = {"192.168.1.5", 3009, packet, strlen(packet)};
+    pthread_create(&thread_send_packet, NULL, send_packet, &packet_config);
+    printf("\nStarting thread to receive packet...\n");
+    EmptyStruct empty = {1};
+    pthread_create(&thread_receive_packet, NULL, receive_packet, &empty);
+    pthread_join(thread_send_packet, NULL);
+    pthread_join(thread_receive_packet, NULL);
+    free(packet);
     // send_packet("192.168.1.5", 3009, packet, strlen(packet));
     return EXIT_SUCCESS;
 }

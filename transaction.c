@@ -66,6 +66,7 @@ int main()
     // generate key pair
     EVP_PKEY *pkey = generate_key_pair();
     EVP_PKEY *pubkey = EVP_PKEY_new();
+    save_public_key(pkey, "public_key.pem");
     RSA *rsa_pubkey = EVP_PKEY_get1_RSA(pkey);
     if (!rsa_pubkey)
     {

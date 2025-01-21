@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.10)
 project(BlockChain C)
 
 # Specify the executable target
-add_executable(latest_build send_blob.c)
+add_executable(latest_build transaction.c)
 
 # Link the ws2_32 library for Winsock support
-target_link_libraries(latest_build ws2_32)
+target_link_libraries(latest_build ws2_32 ssl crypto)

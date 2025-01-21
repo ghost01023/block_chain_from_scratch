@@ -99,47 +99,49 @@ void *receive_packet(void *void_empty)
     }
     printf("Listening on port %d...\n", 3009);
 
-    // Accept an incoming connection
-    SOCKET clientSocket = accept(serverSocket, NULL, NULL);
-    if (clientSocket == INVALID_SOCKET)
-    {
-        printf("Accept failed: %d\n", WSAGetLastError());
-        closesocket(serverSocket);
-        WSACleanup();
-        *exit_status = 1;
-        return exit_status;
-    }
-    printf("Client connected\n");
-
-    // Receive the blob (assuming it is small enough to fit in the buffer)
-    char buffer[4096];
-    int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
-    if (bytesReceived == SOCKET_ERROR)
-    {
-        printf("Receive failed: %d\n", WSAGetLastError());
-    }
-    else
-    {
-        printf("Received %d bytes of data\n", bytesReceived);
-        printf("Data received:\n");
-        int flag_end_index = bytesReceived - 1;
-        for (int i = 0; i < bytesReceived; i++)
+    for (int i = 0; i < 15; i++)
+    { // Receive the blob (assuming it is small enough to fit in the buffer)
+        // Accept an incoming connection
+        SOCKET clientSocket = accept(serverSocket, NULL, NULL);
+        if (clientSocket == INVALID_SOCKET)
         {
-            if (i < DATA_INDEX || i == flag_end_index)
-            {
-                print_bits(buffer[i]);
-                continue;
-            }
-            printf("%c", buffer[i]);
-            // for (int i = 0; i < bytesReceived; i++) {
-            //     printf("%02X ", (unsigned char)buffer[i]);
-            // }
+            printf("Accept failed: %d\n", WSAGetLastError());
+            closesocket(serverSocket);
+            WSACleanup();
+            *exit_status = 1;
+            return exit_status;
         }
-        printf("\n");
-    }
+        printf("Client connected with iteration number: %d\n", i);
 
-    // Clean up
-    closesocket(clientSocket);
+        char buffer[4096];
+        int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
+        if (bytesReceived == SOCKET_ERROR)
+        {
+            printf("Receive failed: %d\n", WSAGetLastError());
+        }
+        else
+        {
+            printf("Received %d bytes of data\n", bytesReceived);
+            printf("Data received:\n");
+            int flag_end_index = bytesReceived - 1;
+            for (int i = 0; i < bytesReceived; i++)
+            {
+                // if (i < DATA_INDEX || i == flag_end_index)
+                // {
+                //     print_bits(buffer[i]);
+                //     continue;
+                // }
+                printf("%c", buffer[i]);
+                // for (int i = 0; i < bytesReceived; i++) {
+                //     printf("%02X ", (unsigned char)buffer[i]);
+                // }
+            }
+            printf("\n");
+        }
+
+        // Clean up
+        closesocket(clientSocket);
+    }
     closesocket(serverSocket);
     WSACleanup();
     *exit_status = 0;
@@ -297,16 +299,22 @@ int broadcast_transaction()
 int main()
 {
     init_winsock();
-    char *data = "\\BLOCK_HEIGHT=00001232;\\SEQUENCE_POSITION=28478274;";
+    char *data = "WANI\\BLOCK_HEIGHT=00001232;\\SEQUENCE_POSITION=28478274;";
     char *packet = create_packet(0x01, data); // SPECIFY THAT THIS IS A BLOCK
-    pthread_t thread_send_packet, thread_receive_packet, thread_mine_block;
-    printf("\nStarting thread to send packet...\n");
-    PacketConfig packet_config = {"192.168.1.14", 3009, packet, strlen(packet)};
-    pthread_create(&thread_send_packet, NULL, send_packet, &packet_config);
+    pthread_t thread_send_packet[10], thread_receive_packet, thread_mine_block;
+    // printf("\nStarting thread to send packet...\n");
+    PacketConfig packet_config = {"192.168.1.5", 3009, packet, strlen(packet)};
+    for (int i = 0; i < 10; i++)
+    {
+        pthread_create(&thread_send_packet[i], NULL, send_packet, &packet_config);
+    }
     printf("\nStarting thread to receive packet...\n");
     EmptyStruct empty = {1};
     pthread_create(&thread_receive_packet, NULL, receive_packet, &empty);
-    pthread_join(thread_send_packet, NULL);
+    for (int i = 0; i < 10; i++)
+    {
+        pthread_join(thread_send_packet[i], NULL);
+    }
     pthread_join(thread_receive_packet, NULL);
     free(packet);
     // send_packet("192.168.1.5", 3009, packet, strlen(packet));

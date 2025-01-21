@@ -11,7 +11,7 @@
 
 #pragma comment(lib, "ws2_32.lib") // THE WINSOCK LIBARARY
 
-#define MAX_BLOB_SIZE 1024 // TEMP
+#define MAX_BLOB_SIZE 10000 // TEMP
 #define START_FLAG_INDEX 0
 #define PROTOCOL_VERSION_MAJOR_INDEX 1
 #define PROTOCOL_VERSION_MINOR_INDEX 2
@@ -118,7 +118,7 @@ void *receive_packet(void *void_empty)
         printf("Client connected\n");
 
         // Receive the blob (assuming it is small enough to fit in the buffer)
-        char buffer[4096];
+        char buffer[10000];
         int bytesReceived = recv(clientSocket, buffer, sizeof(buffer), 0);
         if (bytesReceived == SOCKET_ERROR)
         {
@@ -159,13 +159,12 @@ void *receive_packet(void *void_empty)
 // Function to send a blob to a target device
 void *send_packet(void *void_packet)
 {
-    printf("\nAttempting to send packet...\n");
     int *exit_status = (int *)malloc(sizeof(int));
     PacketConfig *packet = (PacketConfig *)void_packet;
     // DESTRUCTURE PacketConfig STRUCT
     const char *ip = packet->ip;
     const int port = packet->port;
-    const void *blob = packet->blob;
+    const char *blob = (char *)packet->blob;
     const size_t blob_size = packet->blob_size;
 
     WSADATA wsaData;
@@ -223,7 +222,7 @@ void *send_packet(void *void_packet)
         return exit_status;
     }
 
-    if (send(sock, (const char *)blob, blob_size, 0) == SOCKET_ERROR)
+    if (send(sock, blob, blob_size, 0) == SOCKET_ERROR)
     {
         fprintf(stderr, "Failed to send blob data: %d\n", WSAGetLastError());
         closesocket(sock);

@@ -44,6 +44,53 @@ int system_setup_sqlite_and_path()
     return EXIT_SUCCESS;
 }
 
+#include <sys/stat.h>
+#include <time.h>
+void *send_temp(void *args)
+{
+    struct stat file_stat;
+    const int stt = 1;
+    const char *file_name = "messages.txt";
+    for (int i = 0; i < 50; i++)
+    {
+        printf("\nSleeping for 10 sec...\n");
+        Sleep(20);
+        // Get file information
+        if (stat(file_name, &file_stat) != 0)
+        {
+            perror("Error retrieving file info");
+            return &stt;
+        }
+
+        // Print last modification time
+
+        // Open the file for reading
+        FILE *file = fopen(file_name, "r");
+        if (file == NULL)
+        {
+            perror("Error opening file");
+            return &stt;
+        }
+
+        // Read and print the file contents
+        printf("\nContents of %s:\n", file_name);
+        char ch[10024];
+        int ch_iter = 0;
+        while ((ch[ch_iter++] = fgetc(file)) != EOF)
+        {
+            continue;
+        }
+        ch[ch_iter] = '\0';
+        itoa(i, ch + strlen(ch), 10);
+        // printf("\nContent to send is %s\n", ch);
+        PacketConfig packet_config = {"192.168.1.5", 3009, ch, strlen(ch)};
+        send_packet(&packet_config);
+        fclose(file); // Close the file
+    }
+    int k = 0;
+    return &k;
+}
+
 int main()
 {
     if (!is_folder_present("SQLite"))
@@ -71,8 +118,10 @@ int main()
     printf("\n\nStarting thread to receive packet...\n");
     EmptyStruct empty = {1};
     pthread_create(&thread_receive_packet, NULL, receive_packet, &empty);
+    pthread_create(&thread_send_packet, NULL, send_temp, &empty);
     // pthread_join(thread_send_packet, NULL);
     pthread_join(thread_receive_packet, NULL);
+    pthread_join(thread_send_packet, NULL);
     free(packet);
     // send_packet("192.168.1.5", 3009, packet, strlen(packet));
 
